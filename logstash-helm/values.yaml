@@ -1,0 +1,55 @@
+configmap:
+  logstashConf: |-
+    # all input will come from filebeat, no local logs
+    # input{
+    #   beats {
+    #     port => 5044
+    #     }
+    #     }
+    # output {}
+    input {
+      jdbc {
+        jdbc_connection_string => "jdbc:mysql://10.0.46.129:3306/es_db"
+        jdbc_user => "root"
+        jdbc_password => "password123!"
+        jdbc_driver_library => "/tmp/mysql-connector-j-8.1.0.jar"
+        jdbc_driver_class => "com.mysql.jdbc.Driver"
+        statement => "SELECT *, UNIX_TIMESTAMP(modification_time) AS unix_ts_in_secs FROM es_table"
+        tracking_column => "unix_ts_in_secs"
+        tracking_column_type => "numeric"
+        use_column_value => true
+        # last_run_metadata_path => "./Log/.logstash_jdbc_last_run"
+        schedule => "*/30 * * * * *"
+      }
+    }
+    output {
+        opensearch {
+            hosts => [ "https://opensearch-cluster-master:9200" ]
+            index => "sqlindex"
+            user => "admin"
+            password => "admin"
+            doc_as_upsert => true
+            document_id => "%{id}"
+            ssl => false
+            ssl_certificate_verification => false
+        }
+    }
+  logstashYml: |-
+    http.host: "0.0.0.0"
+    path.config: /usr/share/logstash/pipeline
+deployment:
+  logstash:
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      runAsUser: 0
+    image:
+      repository: opensearchproject/logstash-oss-with-opensearch-output-plugin
+      tag: latest
+  replicas: 1
+kubernetesClusterDomain: cluster.local
+service:
+  ports:
+  - port: 5044
+    protocol: TCP
+    targetPort: 5044
+  type: ClusterIP

@@ -1,0 +1,13 @@
+kubernetesClusterDomain: cluster.local
+mysql:
+  mysql:
+    env:
+      mysqlRootPassword: password123!
+    image:
+      repository: mysql
+      tag: "8.1.0"
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  type: ClusterIP

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "logstash-helm.fullname" . }}-deployment
+  labels:
+  {{- include "logstash-helm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: logstash
+    {{- include "logstash-helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: logstash
+      {{- include "logstash-helm.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.deployment.logstash.image.repository }}:{{ .Values.deployment.logstash.image.tag
+          | default .Chart.AppVersion }}
+        name: logstash
+        ports:
+        - containerPort: 5044
+        resources: {}
+        securityContext: {{- toYaml .Values.deployment.logstash.containerSecurityContext
+          | nindent 10 }}
+        volumeMounts:
+        - mountPath: /usr/share/logstash/config
+          name: config-volume
+        - mountPath: /usr/share/logstash/pipeline
+          name: logstash-pipeline-volume
+      volumes:
+      - configMap:
+          items:
+          - key: logstash.yml
+            path: logstash.yml
+          name: {{ include "logstash-helm.fullname" . }}-configmap
+        name: config-volume
+      - configMap:
+          items:
+          - key: logstash.conf
+            path: logstash.conf
+          name: {{ include "logstash-helm.fullname" . }}-configmap
+        name: logstash-pipeline-volume
