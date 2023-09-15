@@ -1,0 +1,25 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ include "logstash-sa-pvc.fullname" . }}-my-azurefile
+  labels:
+  {{- include "logstash-sa-pvc.labels" . | nindent 4 }}
+mountOptions:
+- dir_mode=0777
+- file_mode=0777
+- uid=0
+- gid=0
+- mfsymlinks
+- cache=strict
+- actimeo=30
+parameters:
+  shareName: pod-file-share
+  skuName: Standard_LRS
+provisioner: kubernetes.io/azure-file
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: my-azurefile

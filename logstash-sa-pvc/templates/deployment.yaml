@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "logstash-sa-pvc.fullname" . }}-logstash-deployment
+  labels:
+  {{- include "logstash-sa-pvc.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.logstashDeployment.replicas }}
+  selector:
+    matchLabels:
+      app: logstash
+    {{- include "logstash-sa-pvc.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: logstash
+      {{- include "logstash-sa-pvc.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.logstashDeployment.logstash.image.repository }}:{{ .Values.logstashDeployment.logstash.image.tag
+          | default .Chart.AppVersion }}
+        name: logstash
+        ports:
+        - containerPort: 5044
+        resources: {}
+        securityContext: {{- toYaml .Values.logstashDeployment.logstash.containerSecurityContext
+          | nindent 10 }}
+        volumeMounts:
+        - mountPath: /tmp
+          name: azure
+        - mountPath: /usr/share/logstash/config
+          name: config-volume
+        - mountPath: /usr/share/logstash/pipeline
+          name: logstash-pipeline-volume
+      volumes:
+      - name: azure
+        persistentVolumeClaim:
+          claimName: {{ include "logstash-sa-pvc.fullname" . }}-my-azurefile
+      - configMap:
+          items:
+          - key: logstash.yml
+            path: logstash.yml
+          name: {{ include "logstash-sa-pvc.fullname" . }}-logstash-configmap
+        name: config-volume
+      - configMap:
+          items:
+          - key: logstash.conf
+            path: logstash.conf
+          name: {{ include "logstash-sa-pvc.fullname" . }}-logstash-configmap
+        name: logstash-pipeline-volume
