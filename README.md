@@ -2,13 +2,13 @@
 
 The repo for Logstash in ELK is not compatible with Opensearch.
 
-Why do we need Logstash?
+**Why do we need Logstash?**
 
 Logstash is an agent that collects logs from Elastic/Opensearch cluster. 
 
 In this scenario, we made one example of SQL database (mysql) which will contain some data. That data will be input for Logstash, then after processing data will be output to Opensearch. 
 
-How does it work?
+**How does it work?**
 
 Prerequisite: You will need to have running Opensearch cluster accessible in cluster at port 9200
 
