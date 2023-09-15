@@ -10,7 +10,7 @@ logstashConfigmap:
     # output {}
     input {
       jdbc {
-        jdbc_connection_string => "jdbc:mysql://10.0.46.129:3306/es_db"
+        jdbc_connection_string => "jdbc:mysql://10.244.1.33:3306/es_db"
         jdbc_user => "root"
         jdbc_password => "password123!"
         jdbc_driver_library => "/tmp/mysql-connector-j-8.1.0.jar"
@@ -26,7 +26,7 @@ logstashConfigmap:
     output {
         opensearch {
             hosts => [ "https://opensearch-cluster-master:9200" ]
-            index => "sqlindex"
+            index => "sqlindex-helm"
             user => "admin"
             password => "admin"
             doc_as_upsert => true
