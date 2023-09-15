@@ -38,7 +38,7 @@ spec:
       volumes:
       - name: azure
         persistentVolumeClaim:
-          claimName: {{ include "logstash-sa-pvc.fullname" . }}-my-azurefile
+          claimName: my-azurefile1
       - configMap:
           items:
           - key: logstash.yml

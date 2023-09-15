@@ -1,7 +1,7 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: my-azurefile
+  name: my-azurefile1
 mountOptions:
 - dir_mode=0777
 - file_mode=0777
@@ -11,7 +11,7 @@ mountOptions:
 - cache=strict
 - actimeo=30
 parameters:
-  shareName: pod-file-share
+  shareName: pod-file-share1
   skuName: Standard_LRS
 provisioner: kubernetes.io/azure-file
 spec:
@@ -20,4 +20,4 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: my-azurefile
+  storageClassName: my-azurefile1
