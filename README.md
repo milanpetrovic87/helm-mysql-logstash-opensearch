@@ -28,4 +28,4 @@ You need to use kubectl to create persistent volume (pv) and persistent volume c
 
 The end result is index created in Opensearch
 
-![](Aspose.Words.b5cc3e24-b648-4371-a94f-ba1e15bede55.001.png)
+![alt text](https://github.com/milanpetrovic87/helm-mysql-logstash-opensearch/blob/main/opensearch_with_logstash_and_mysql.png)
